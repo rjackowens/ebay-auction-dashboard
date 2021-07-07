@@ -13,7 +13,7 @@ celery = Celery("server", broker=server.config["CELERY_BROKER_URL"])
 celery.conf.update(server.config)
 
 
-@celery.task
+@celery.task() # @celery.task(rate_limit='20/m') 
 def get_number_task() -> str:
     """Gets a random number from webpage"""
     get_number()

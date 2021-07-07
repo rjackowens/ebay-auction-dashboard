@@ -45,14 +45,12 @@ services:
       context: .\src\api
     container_name: status-dashboard-api
     restart: unless-stopped
-    # entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
     ports:
       - "9000:9000"
 
-  celery_worker: # runs Selenium tests; this can be scaled manually via docker-compose scale
+  celery_worker: # runs Selenium tests; this can be scaled manually via docker-compose --scale celery_worker=x
     build:
       context: .\src\api
-    container_name: status-dashboard-celery
     restart: unless-stopped
     entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
 
