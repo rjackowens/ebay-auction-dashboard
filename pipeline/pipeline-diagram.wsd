@@ -1,0 +1,19 @@
+' Generate .png file with .\plantuml.jar -png .\pipeline-diagram.wsd
+
+@startuml pipeline-diagram
+skinparam monochrome true
+
+(*) -d-> "PipelineResource Checkout"
+"PipelineResource Checkout" -d->  ==IF1==
+
+==IF1== -[dashed]d-> "Unit Tests"
+==IF1== -[dashed]d-> "YAML Validation"
+
+"Unit Tests" -[dashed]d-> ==IF2==
+"YAML Validation" -[dashed]d-> ==IF2==
+
+==IF2== -d-> "Build & Push Image"
+-d-> "Sync Argo CD"
+"Sync Argo CD" -d-> (*)
+
+@enduml

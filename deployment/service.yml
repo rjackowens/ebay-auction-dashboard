@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: teams-status-service
+spec:
+  ports:
+    - name: api
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+  selector:
+    app: teams-status-app

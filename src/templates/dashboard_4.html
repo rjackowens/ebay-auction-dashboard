@@ -1,0 +1,41 @@
+{% from 'macros.html' import table_macro %}
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/image-grid_3.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+            $(function() {
+              $('a#test').on('click', function(e) {
+                e.preventDefault()
+                $.getJSON('/db_refresh',
+                    function(data) {
+                  //do nothing
+                });
+                return false;
+              });
+            });
+    </script>
+
+    <div class='container'>
+        <form>
+            <a href=# id=test><button class='btn btn-default'>Refresh DB</button></a>
+            <div>Last refreshed: 12:26</div>
+        </form>
+    </div>
+
+    <div class="section">
+        <ul class="grid">
+            {{ table_macro("BUILD 1", build_1) }}
+            {{ table_macro("BUILD 2", build_2) }}
+            {{ table_macro("BUILD 3", build_3) }}
+            {{ table_macro("BUILD 4", build_2) }}
+            {{ table_macro("BUILD 5", build_1) }}
+            {{ table_macro("BUILD 6", build_3) }}
+            {{ table_macro("BUILD 7", build_4) }}
+        </ul>
+    </div>
+</body>

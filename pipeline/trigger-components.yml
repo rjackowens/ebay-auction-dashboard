@@ -1,0 +1,87 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-teams-status
+  namespace: payeros-devops
+spec:
+  params:
+    - name: pullRequestName
+    - name: latestCommit
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: teams-status-pipeline-run-
+        labels:
+          tekton.dev/pipeline: teams-status-pipeline
+        namespace: payeros-devops
+      spec:
+        params: []
+        pipelineRef:
+          name: teams-status-pipeline
+        params:
+        - name: pullRequestName
+          value: $(tt.params.pullRequestName)
+        - name: latestCommit
+          value: $(tt.params.latestCommit)
+        serviceAccountName: tekton-build-service
+        workspaces:
+          - name: shared-workspace
+            persistentVolumeClaim:
+              claimName: teams-status-pvc
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-teams-status
+  namespace: payeros-devops
+spec:
+  params:
+    - name: pullRequestName
+      value: '$(body.pullRequest.fromRef.displayId)'
+    - name: latestCommit
+      value: '$(body.pullRequest.fromRef.latestCommit)'
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-teams-status
+  namespace: payeros-devops
+  finalizers:
+    - eventlisteners.triggers.tekton.dev
+spec:
+  podTemplate: {}
+  serviceAccountName: pipeline
+  triggers:
+    - name: cel-interceptor-with-filter
+      interceptors:
+        - cel:
+            filter: body.actor.name != 'SRCPAYEROSBITBUCKET' # image tag commit via service account ignored 
+      bindings:
+        - kind: TriggerBinding
+          ref: trigger-binding-teams-status
+      template:
+        name: trigger-template-teams-status
+status:
+  address:
+    url: 'http://event-listener-teams-status.payeros-devops.svc.cluster.local:8080' # ClusterIP service
+  configuration:
+    generatedName: event-listener-teams-status
+
+---
+
+# externally accessible at http://event-listener-route-teams-status-payeros-devops.apps.np1.ent-ocp4-np1-useast1.aws.internal.das/
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: event-listener-route-teams-status
+  namespace: payeros-devops
+spec:
+  to:
+    kind: Service
+    name: el-event-listener-teams-status
+    weight: 100

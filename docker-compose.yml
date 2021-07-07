@@ -1,0 +1,52 @@
+version: '3'
+services:
+
+  flask:
+    build:
+      context: .
+    container_name: status-dashboard-app
+    restart: unless-stopped
+    environment:
+      MONGODB_DATABASE: flaskdb
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: root
+      MONGODB_HOSTNAME: mongodb
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+
+  mongodb:
+    image: mongo
+    container_name: status-dashboard-db
+    restart: unless-stopped
+    command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: flaskdb
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - mongodbdata:/data/db
+    ports:
+      - "27017:27017"
+
+  celery_worker:
+    build:
+      context: .
+    container_name: status-dashboard-celery
+    restart: unless-stopped
+    entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
+
+  redis:
+    image: redis:alpine
+    container_name: status-dashboard-redis
+    restart: unless-stopped
+    command: redis-server --save "" --appendonly no
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongodbdata:
+    driver: local

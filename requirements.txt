@@ -1,0 +1,13 @@
+flask
+paramiko
+jinja2
+click
+Werkzeug
+itsdangerous
+markupsafe
+grequests
+celery
+redis
+requests
+pandas
+pymongo

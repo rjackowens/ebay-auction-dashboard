@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trigger-teams-status
+spec:
+  params:
+    - name: PIPELINE_RUN_NAME
+      type: string
+      default: ""
+  steps:
+    - name: post-payload
+      image: registry.redhat.io/ubi8/ubi-minimal
+      script: |
+          response=$(curl --location --request POST 'http://teams-status-route-payeros-devops.apps.np1.ent-ocp4-np1-useast1.aws.internal.das/' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "pipeline_run_name": "$(params.PIPELINE_RUN_NAME)"
+          }')
+
+          echo "Successfully triggered Teams notifications for $(params.PIPELINE_RUN_NAME)"
+          echo "View http://teams-status-route-payeros-devops.apps.np1.ent-ocp4-np1-useast1.aws.internal.das/status/$response for task status"

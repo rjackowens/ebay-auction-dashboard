@@ -1,0 +1,35 @@
+' Generate .png file with .\plantuml.jar -png ..\sequence-diagram.wsd
+
+@startuml cicd-workflow-sequence
+
+skinparam monochrome true
+autonumber " ."
+hide footbox
+
+actor Developer as dev
+participant "CI/CD Pipeline" as pipeline
+participant "Teams Status App" as app
+participant "Teams Channel" as teams
+
+dev -> pipeline: Trigger pipeline
+activate pipeline
+
+pipeline -> app: POST pipelineRunName
+
+activate app
+app -> app: Add task to queue
+activate app
+pipeline <-- app: Poll pipeline
+deactivate pipeline
+
+alt success
+    app -> teams: Send success message
+else failure
+    app -> teams: Send failure message
+else timeout
+    app -> teams: Send timeout message
+deactivate app
+
+end
+
+@enduml

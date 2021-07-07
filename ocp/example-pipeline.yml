@@ -1,0 +1,75 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: teams-status-pipeline
+  namespace: payeros-devops
+spec:
+  params:
+    - name: pullRequestName
+      type: string
+      description: Passed via TriggerTemplate
+      default: "Unknown PR"
+    - name: latestCommit
+      type: string
+      description: Passed via TriggerTemplate
+      default: "Unknown Commit"
+    - name: deploymentEnvironment
+      type: string
+      description: Passed via TriggerTemplate
+      default: "payeros-dev"
+  workspaces:
+    - name: shared-workspace
+
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: https://SRCPAYEROSBITBUCKET@bitbucket.anthem.com/scm/PAYER/demo.git
+        - name: subdirectory
+          value: ""
+        - name: revision
+          value: "$(params.pullRequestName)"
+        - name: deleteExisting
+          value: "true"
+        - name: sslVerify
+          value: "false"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+
+    - name: trigger-teams-status
+      params:
+        - name: PIPELINE_RUN_NAME
+          value: $(context.pipelineRun.name)
+      taskRef:
+        name: trigger-teams-status
+      runAfter: [ fetch-repository ]
+
+    - name: build-and-push-image
+      params:
+        - name: BUILDER_IMAGE
+          value: registry.redhat.io/rhel8/buildah
+        - name: IMAGE
+          value: quay.apps.np2.ent-ocp4-np2-useast1.aws.internal.das/payeros/demo2:latest
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: CONTEXT
+          value: .
+        - name: TLSVERIFY
+          value: 'false'
+        - name: FORMAT
+          value: docker
+        - name: BUILD_EXTRA_ARGS
+          value: >-
+            --memory=4g
+        - name: DOCKER_BUILD_SECRETS
+          value: demo-build-secrets
+      workspaces:
+          - name: source
+            workspace: shared-workspace
+      taskRef:
+        name: buildah-custom
+      runAfter: [ fetch-repository, trigger-teams-status ]

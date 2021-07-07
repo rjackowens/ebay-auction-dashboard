@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teams-status-app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: teams-status-app
+  template:
+    metadata:
+      labels:
+        app: teams-status-app
+    spec:
+      containers:
+
+      - env:
+        - name: automation_token
+          valueFrom:
+            secretKeyRef:
+              key: automation_token
+              name: teams-status-secrets
+        - name: celery_broker_url
+          valueFrom:
+            configMapKeyRef:
+                key: celery_broker_url
+                name: teams-status-config
+        - name: celery_result_backend
+          valueFrom:
+            configMapKeyRef:
+                key: celery_result_backend
+                name: teams-status-config
+        - name: openshift_cluster_url
+          valueFrom:
+            configMapKeyRef:
+                key: openshift_cluster_url
+                name: teams-status-config
+        - name: teams_webhook_url
+          valueFrom:
+            configMapKeyRef:
+                key: teams_webhook_url
+                name: teams-status-config
+        name: api
+        image: quay.apps.np2.ent-ocp4-np2-useast1.aws.internal.das/payeros/teams-status:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+
+      - command:
+        - ./celery.sh
+        name: celery-worker
+        image: quay.apps.np2.ent-ocp4-np2-useast1.aws.internal.das/payeros/teams-status:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+
+      - command:
+        - ./disable-peristence.sh
+        name: redis
+        image: quay.apps.np2.ent-ocp4-np2-useast1.aws.internal.das/payeros/redis-alpine
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 6379
+
+      imagePullSecrets:
+      - name: quay-registry-secret
+      volumes:
+      - name: secrets
+        secret:
+          secretName: teams-status-secrets

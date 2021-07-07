@@ -1,0 +1,9 @@
+@startdot components
+
+digraph UMLdiagrams {
+node [color=Black, shape=box]
+     "teams-status";
+        "teams-status" -> {api celery_worker redis};
+}
+
+@enddot
