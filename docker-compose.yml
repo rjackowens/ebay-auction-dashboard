@@ -3,7 +3,7 @@ services:
 
   dashboard_ui: # runs dashboard UI
     build:
-      context: .\src\ui
+      context: ./src/ui
     container_name: status-dashboard-ui
     restart: unless-stopped
     environment:
@@ -42,7 +42,7 @@ services:
 
   api: # Flask API server
     build:
-      context: .\src\api
+      context: ./src/api
     container_name: status-dashboard-api
     restart: unless-stopped
     ports:
@@ -50,7 +50,7 @@ services:
 
   celery_worker: # runs Selenium tests; this can be scaled manually via docker-compose --scale celery_worker=x
     build:
-      context: .\src\api
+      context: ./src/api
     restart: unless-stopped
     entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
 

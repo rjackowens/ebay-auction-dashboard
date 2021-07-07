@@ -31,7 +31,9 @@ RUN chown redis /data
 
 WORKDIR /app
 
+RUN apt-get install python3-setuptools -y
 COPY requirements.txt .
+RUN pip3 install --upgrade pip
 RUN python3 -m pip --trusted-host pypi.org --trusted-host files.pythonhosted.org install -r requirements.txt
 
 COPY . .

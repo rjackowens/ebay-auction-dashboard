@@ -1,3 +1,4 @@
+setuptools-rust
 flask
 paramiko
 jinja2
