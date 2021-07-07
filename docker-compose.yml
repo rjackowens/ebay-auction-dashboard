@@ -1,10 +1,10 @@
 version: '3'
 services:
 
-  flask:
+  dashboard_ui: # runs dashboard UI
     build:
-      context: .
-    container_name: status-dashboard-app
+      context: .\src\ui
+    container_name: status-dashboard-ui
     restart: unless-stopped
     environment:
       MONGODB_DATABASE: flaskdb
@@ -16,7 +16,7 @@ services:
     ports:
       - "8080:8080"
 
-  mongodb:
+  mongodb: # stores dashboard UI entries
     image: mongo
     container_name: status-dashboard-db
     restart: unless-stopped
@@ -32,20 +32,29 @@ services:
     ports:
       - "27017:27017"
 
-  celery_worker:
-    build:
-      context: .
-    container_name: status-dashboard-celery
-    restart: unless-stopped
-    entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
-
-  redis:
+  redis: # backend for Celery
     image: redis:alpine
     container_name: status-dashboard-redis
     restart: unless-stopped
     command: redis-server --save "" --appendonly no
     ports:
       - "6379:6379"
+
+  api: # Flask API server
+    build:
+      context: .\src\api
+    container_name: status-dashboard-api
+    restart: unless-stopped
+    # entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
+    ports:
+      - "9000:9000"
+
+  celery_worker: # runs Selenium tests; this can be scaled manually via docker-compose scale
+    build:
+      context: .\src\api
+    container_name: status-dashboard-celery
+    restart: unless-stopped
+    entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
 
 volumes:
   mongodbdata:

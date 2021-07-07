@@ -1,0 +1,6 @@
+flask
+celery
+redis
+pyautogui
+pyperclip
+selenium

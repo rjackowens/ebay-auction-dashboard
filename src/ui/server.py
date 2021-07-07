@@ -1,16 +1,16 @@
 import os, sys, time, subprocess, redis, requests, json
 from flask import Flask, request, url_for, jsonify, render_template
-from celery import Celery
+# from celery import Celery
 
 requests.urllib3.disable_warnings()
 server, port= Flask(__name__), 8080
 
-server.config["CELERY_BROKER_URL"] = os.getenv("celery_broker_url")
-server.config["CELERY_RESULT_BACKEND"] = os.getenv("celery_broker_url")
+# server.config["CELERY_BROKER_URL"] = os.getenv("celery_broker_url")
+# server.config["CELERY_RESULT_BACKEND"] = os.getenv("celery_broker_url")
 server.config["TEMPLATES_AUTO_RELOAD"] = True # https://stackoverflow.com/questions/37575089/disable-template-cache-jinja2
 
-celery = Celery("server", broker=server.config["CELERY_BROKER_URL"])
-celery.conf.update(server.config)
+# celery = Celery("server", broker=server.config["CELERY_BROKER_URL"])
+# celery.conf.update(server.config)
 
 
 def run_shell(command: str) -> subprocess.CompletedProcess:
@@ -61,33 +61,33 @@ def send_teams_status(pipeline_run: str, status: str) -> None:
     requests.request("POST", teams_url, headers=headers, data=payload, verify=False)
 
 
-@celery.task
-def check_status_loop(pipeline_run: str) -> str:
-    """Checks pipeline status every 10 seconds, sends Teams notification on success/failure"""
-    ocp_login()
-    i, timeout = 0, 570 # 30 second offset to give pipeline time to start
+# @celery.task
+# def check_status_loop(pipeline_run: str) -> str:
+#     """Checks pipeline status every 10 seconds, sends Teams notification on success/failure"""
+#     ocp_login()
+#     i, timeout = 0, 570 # 30 second offset to give pipeline time to start
 
-    while i < timeout:
+#     while i < timeout:
 
-        status = get_pipeline_status(pipeline_run)
+#         status = get_pipeline_status(pipeline_run)
 
-        if status == "Running":
-            print(f"{pipeline_run} is still running. Waiting {timeout - i} more seconds", file=sys.stderr)
-            i += 10
-            time.sleep(10)
+#         if status == "Running":
+#             print(f"{pipeline_run} is still running. Waiting {timeout - i} more seconds", file=sys.stderr)
+#             i += 10
+#             time.sleep(10)
 
-        elif status == "Succeeded":
-            print(f"{pipeline_run} succeeded", file=sys.stderr)
-            send_teams_status(pipeline_run, "success")
-            return f"{pipeline_run} succeeded"
+#         elif status == "Succeeded":
+#             print(f"{pipeline_run} succeeded", file=sys.stderr)
+#             send_teams_status(pipeline_run, "success")
+#             return f"{pipeline_run} succeeded"
 
-        else:
-            print(f"{pipeline_run} failed", file=sys.stderr)
-            send_teams_status(pipeline_run, "failure")
-            return f"{pipeline_run} failed"
+#         else:
+#             print(f"{pipeline_run} failed", file=sys.stderr)
+#             send_teams_status(pipeline_run, "failure")
+#             return f"{pipeline_run} failed"
 
-    send_teams_status(pipeline_run, "timeout")
-    return f"{pipeline_run} timed out"
+#     send_teams_status(pipeline_run, "timeout")
+#     return f"{pipeline_run} timed out"
 
 
 from dummy_data import build_4
@@ -110,46 +110,46 @@ def db_refresh():
     return "placeholder"
 
 
-@server.route("/status", methods=["POST"])
-def trigger_teams_status_task():
-    """Adds Teams event loop task to Celery queue"""
-    pipeline_run = request.get_json()["pipeline_run_name"] # default flask.Request object
+# @server.route("/status", methods=["POST"])
+# def trigger_teams_status_task():
+#     """Adds Teams event loop task to Celery queue"""
+#     pipeline_run = request.get_json()["pipeline_run_name"] # default flask.Request object
 
-    print(f"{pipeline_run} added to queue", file=sys.stderr)
-    send_teams_status(f"{pipeline_run}", "start")
-    task = check_status_loop.apply_async(args=[pipeline_run])
+#     print(f"{pipeline_run} added to queue", file=sys.stderr)
+#     send_teams_status(f"{pipeline_run}", "start")
+#     task = check_status_loop.apply_async(args=[pipeline_run])
 
-    return task.id
+#     return task.id
 
 
-@server.route("/status/<task_id>", methods=["GET"])
-def get_task_status(task_id: str):
-    """Gets current status of Celery task"""
-    task = check_status_loop.AsyncResult(task_id)
+# @server.route("/status/<task_id>", methods=["GET"])
+# def get_task_status(task_id: str):
+#     """Gets current status of Celery task"""
+#     task = check_status_loop.AsyncResult(task_id)
 
-    if task.state == "PENDING":
-        response = {
-            "state": task.state,
-            "status": "Build is still running..."
-        }
+#     if task.state == "PENDING":
+#         response = {
+#             "state": task.state,
+#             "status": "Build is still running..."
+#         }
 
-    elif task.state != "FAILURE":
-        response = {
-            "state": "Completed.",
-            "status": "Task has completed..."
-        }
+#     elif task.state != "FAILURE":
+#         response = {
+#             "state": "Completed.",
+#             "status": "Task has completed..."
+#         }
 
-        if "result" in task.info:
-            response["result"] = task.info["result"]
+#         if "result" in task.info:
+#             response["result"] = task.info["result"]
 
-    else:
-        # something went wrong in the background job
-        response = {
-            "state": task.state,
-            "status": str(task.info),  # this is the exception raised
-        }
+#     else:
+#         # something went wrong in the background job
+#         response = {
+#             "state": task.state,
+#             "status": str(task.info),  # this is the exception raised
+#         }
 
-    return jsonify(response)
+#     return jsonify(response)
 
 
 if __name__ == "__main__":
