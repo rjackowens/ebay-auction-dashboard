@@ -1,20 +1,6 @@
 from pymongo import MongoClient, errors
 
 
-def init_connection():
-    try:
-        client = MongoClient("mongodb://root:root@mongodb") # 27017
-        
-        database_names = client.list_database_names()
-
-        print("successfully connected to MongoDB!")
-        print ("\ndatabases:", database_names)
-        print ("server version:", client.server_info()["version"])
-
-    except errors.ServerSelectionTimeoutError as e:
-        raise(e)
-
-
 def populate_dummy_data():
     """Add 3 dummy build collections to dummy_db database"""
     client = MongoClient("mongodb://root:root@mongodb") # connect to admin db
@@ -54,13 +40,13 @@ def get_items(collection_name: str) -> list:
     """Retrieves all items in collection"""
     client = MongoClient("mongodb://root:root@mongodb") # connect to admin db
 
-    db = client.dummy_db # specify db
+    db = client.flaskdb # specify db
     collection = db[collection_name] # specify collection
 
     cursor = collection.find({})
 
-    collection_name = []
+    items = []
     for document in cursor:
-          collection_name.append(document)
+          items.append(document)
 
-    return collection_name
+    return items
