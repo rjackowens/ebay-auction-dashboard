@@ -1,16 +1,23 @@
 from pymongo import MongoClient, errors
 
 
-def add_item(number:str, collection_name="placeholder"):
-    """Add item to collection in dummy_db database"""
+def delete_collection(collection_name:str):
+    client = MongoClient("mongodb://root:root@mongodb") # connect to admin db
+    db = client.flaskdb # specify db
+    db[collection_name].drop()
+
+
+def add_item(brand:str, price:str, bids:str, collection_name=""):
+    """Add item to collection in flaskdb database"""
     client = MongoClient("mongodb://root:root@mongodb") # connect to admin db
 
     db = client.flaskdb # specify db
-    db.collection_name.drop() # delete collection if already exists
     collection = db[collection_name] # create and populate collection
 
     my_item = {
-        "number" : number
+        "brand" : brand,
+        "price" : price,
+        "bids" : bids
     }
 
     collection.insert_one(my_item).inserted_id

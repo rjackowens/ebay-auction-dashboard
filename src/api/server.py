@@ -1,29 +1,29 @@
 import os, sys
+import pandas as pd
 from flask import Flask
 from celery import Celery
-from selenium_scraper import get_number
+from selenium_scraper import run_search
 
 server, port= Flask(__name__), 9000
 
 server.config["CELERY_BROKER_URL"] = os.getenv("celery_broker_url")
 server.config["CELERY_RESULT_BACKEND"] = os.getenv("celery_broker_url")
-server.config["TEMPLATES_AUTO_RELOAD"] = True # https://stackoverflow.com/questions/37575089/disable-template-cache-jinja2
 
 celery = Celery("server", broker=server.config["CELERY_BROKER_URL"])
 celery.conf.update(server.config)
 
 
 @celery.task() # @celery.task(rate_limit='20/m') 
-def get_number_task() -> str:
-    """Gets a random number from webpage"""
-    get_number()
+def selenium_search() -> str:
+    """Runs Selenium search for item"""
+    run_search("Breguet", "1200", "17650")
 
 
-@server.route("/get_number", methods=["GET"])
-def trigger_teams_status_task():
-    """Adds task to Celery queue"""
-    print(f"get_number() added to queue", file=sys.stderr)
-    task = get_number_task.apply_async() # task = get_number_task.apply_async(args=[pipeline_run])
+@server.route("/refresh", methods=["GET"])
+def add_search_to_queue():
+    """Adds search task to Celery queue"""
+    print(f"selenium_search() added to queue", file=sys.stderr)
+    task = selenium_search.apply_async() # task = get_number_task.apply_async(args=[pipeline_run])
     return task.id
 
 

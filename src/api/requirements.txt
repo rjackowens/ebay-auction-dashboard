@@ -5,3 +5,6 @@ pyautogui
 pyperclip
 selenium
 pymongo
+bs4
+lxml
+pandas
