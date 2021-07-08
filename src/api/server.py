@@ -14,16 +14,19 @@ celery.conf.update(server.config)
 
 
 @celery.task() # @celery.task(rate_limit='20/m') 
-def selenium_search() -> str:
+def selenium_search(title: str, min_price: str, max_price: str) -> str:
     """Runs Selenium search for item"""
-    run_search("Breguet", "1200", "17650")
+    run_search(title, min_price, max_price)
 
 
 @server.route("/refresh", methods=["GET"])
-def add_search_to_queue():
-    """Adds search task to Celery queue"""
-    print(f"selenium_search() added to queue", file=sys.stderr)
-    task = selenium_search.apply_async() # task = get_number_task.apply_async(args=[pipeline_run])
+def add_searches_to_queue():
+    """Adds all search tasks to Celery queue"""
+    df = pd.read_csv("watch_list.csv", index_col=0)
+
+    for index, row in df.iterrows():
+        task = selenium_search.apply_async(args=[index, row['MIN PRICE'], row['MAX PRICE']])
+
     return task.id
 
 
