@@ -12,7 +12,7 @@ from mongo import get_items
 @server.route('/')
 def table_test():
     return render_template(
-        'dashboard_4.html',
+        'dashboard.html',
         zenith=get_items("zenith"),
         sinn=get_items("sinn"),
         jaeger_lecoultre=get_items("jaeger lecoultre"),
@@ -32,7 +32,23 @@ def table_test():
         longines=get_items("longines"),
         parmigiani=get_items("parmigiani"),
         piaget=get_items("piaget"),
-        porsche_design=get_items("porsche design")
+        porsche_design=get_items("porsche design"),
+        glashutte_original=get_items("glashutte original"),
+        alain_silberstein=get_items("alain silberstein"),
+        alpina=get_items("alpina"),
+        bremont=get_items("bremont"),
+        carlo_ferrara=get_items("carlo ferrara"),
+        concord=get_items("concord"),
+        dubey_schaldenbrand=get_items("dubey schaldenbrand"),
+        hamilton=get_items("hamilton"),
+        ikepod=get_items("ikepod"),
+        jaquet_droz=get_items("jaquet droz"),
+        jean_d_eve=get_items("jean d'eve"),
+        rado=get_items("rado"),
+        sevenfriday=get_items("sevenfriday"),
+        ulysse_nardin=get_items("ulysse nardin"),
+        vulcain=get_items("vulcain"),
+        zodiac=get_items("zodiac")
         )
 
 
