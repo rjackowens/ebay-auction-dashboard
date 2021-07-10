@@ -1,0 +1,64 @@
+/* properties for entire grid container */
+.section {
+	/* max-width: 1500px; /* limit max horizontal boxes */
+	margin: 0 auto;
+	height: 100px
+	/* padding: 6% 2%; */
+}
+
+.grid {
+	margin: 10px 10px 10px 10px;
+	padding: 0;
+	list-style: none;
+	display: block;
+	/* text-align: center; */
+	/* width: 50%; */
+}
+
+.grid li {
+	width: 200px; /* grid box size */
+	height: auto; /* grid box size */
+	display: inline-block;
+	margin: 20px 20px 0px 20px; /* space between table boxes */
+}
+
+/* Responsive Portrait Photo Size */
+.portrait {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.img-1 {
+    padding: 1px; /* define text margin in row */
+	border: 3px solid #021a40; /* solid border around table */
+}
+
+.box {
+    height: 225;
+    width: 225;
+    overflow-y: scroll;
+    display: block;
+}
+
+tr:nth-child(even) {
+    background-color: #f3f3f3;
+}
+
+.content-table {
+	border-collapse: collapse;
+	border-radius: 5px 5px 5px 5px; /* rounded corners */
+	overflow: hidden; /* rounded corners */
+	/* note that scroll bars are not rounded, this can probably be fixed, see below */
+	/* https://stackoverflow.com/questions/16676166/apply-border-radius-to-scrollbars-with-css */
+}
+
+.content-table tbody tr {
+	border-bottom: 1px solid darkgray; /* adds divider line between rows */
+}
+
+.button {
+	width: 150px;
+	height: 15px
+}
+
