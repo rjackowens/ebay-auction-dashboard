@@ -1,5 +1,5 @@
 import os, sys, time, redis, requests, json
-from flask import Flask, request, url_for, jsonify, render_template
+from flask import Flask, request, url_for, jsonify, render_template, redirect
 
 requests.urllib3.disable_warnings()
 server, port= Flask(__name__), 8080
@@ -28,15 +28,21 @@ def table_test():
         breitling=get_items("breitling"),
         cartier=get_items("cartier"),
         tudor=get_items("tudor"),
-        grand_seiko=get_items("grand seiko")
+        grand_seiko=get_items("grand seiko"),
+        longines=get_items("longines"),
+        parmigiani=get_items("parmigiani"),
+        piaget=get_items("piaget"),
+        porsche_design=get_items("porsche design")
         )
 
 
-@server.route('/db_refresh')
+@server.route('/db_refresh', methods=["GET"])
 def db_refresh():
     """Trigger update of DB by re-running all Celery tasks """
     print("REFRESHING!!!!!!!!!!!!!!!!!!!", file=sys.stdout)
-    return "placeholder"
+    # return redirect('http://localhost:9000/refresh', code=307) # preserves GET method instead of OPTIONS
+    request = requests.get("http://status-dashboard-api:9000/refresh")
+    return request.text
 
 
 if __name__ == "__main__":
