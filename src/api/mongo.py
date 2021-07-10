@@ -7,7 +7,7 @@ def delete_collection(collection_name:str):
     db[collection_name].drop()
 
 
-def add_item(brand:str, price:str, bids:str, collection_name=""):
+def add_item(brand:str, price:str, bids:str, url:str, time_left:str, collection_name=""):
     """Add item to collection in flaskdb database"""
     client = MongoClient("mongodb://root:root@mongodb") # connect to admin db
 
@@ -17,7 +17,9 @@ def add_item(brand:str, price:str, bids:str, collection_name=""):
     my_item = {
         "brand" : brand,
         "price" : price,
-        "bids" : bids
+        "bids" : bids,
+        "url" : url,
+        "time_left" : time_left
     }
 
     collection.insert_one(my_item).inserted_id

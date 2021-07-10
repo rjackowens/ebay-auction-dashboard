@@ -22,7 +22,7 @@ def selenium_search(title: str, min_price: str, max_price: str) -> str:
 @server.route("/refresh", methods=["GET"])
 def add_searches_to_queue():
     """Adds all search tasks to Celery queue"""
-    df = pd.read_csv("watch_list.csv", index_col=0)
+    df = pd.read_csv("watch_list_short.csv", index_col=0)
 
     for index, row in df.iterrows():
         task = selenium_search.apply_async(args=[index, row['MIN PRICE'], row['MAX PRICE']])

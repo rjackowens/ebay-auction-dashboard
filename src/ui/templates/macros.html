@@ -2,17 +2,17 @@
     <li>
         <table class="box img-1" style="height:225; width:225; overflow-y:scroll; display: block;">
             <p style="text-align:center; margin-top: 5;"> {{ title }}</p>
-            <tr>
+            <!-- <tr>
                 <th>NAME</th>
                 <th><i class="fa fa-clock-o"></i></th>
                 <th>STATUS</th>
-            </tr>
+            </tr> -->
 
             {% for item in build %}
             <tr>
                 <TD class="c1">{{item.brand}}</TD>
-                <TD class="c2">{{item.price}}</TD>
-                <TD class="c3"><SPAN>{{item.bids}}</SPAN></TD>
+                <TD class="c2">{{item.price}} <br>{{item.bids}}</TD>
+                <!-- <TD class="c3"><SPAN>{{item.bids}}</SPAN></TD> -->
             </tr>
             {% endfor %}
         </table>

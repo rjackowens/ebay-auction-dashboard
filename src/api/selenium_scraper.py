@@ -18,6 +18,7 @@ def run_search (search_term: str, min_price: str, max_price: str, stop_words=sto
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument(" --disable-web-security")
 
+    # b = webdriver.Chrome(options=chrome_options, executable_path="/Users/jackowens/Documents/status-dashboard/chromedriver")
     b = webdriver.Chrome(options=chrome_options)
 
     b.get("https://www.ebay.com/sch/ebayadvsearch")
@@ -47,7 +48,7 @@ def run_search (search_term: str, min_price: str, max_price: str, stop_words=sto
 
     search_button = b.find_element_by_xpath("//*[@id='searchBtnLowerLnk']")
     search_button.click() # click search button
-    time.sleep(1)
+    # time.sleep(1)
 
     b.get(b.current_url + f"&_udhi={max_price}&rt=nc&_udlo={min_price}") # set min/max price
     b.get(b.current_url + "&_sop=1") # sort by ending soonest
@@ -59,9 +60,8 @@ def run_search (search_term: str, min_price: str, max_price: str, stop_words=sto
     # Parse Item Titles
     listings = soup.find_all("li", class_="sresult") # <class 'bs4.element.ResultSet'>
 
-    item_titles, item_prices, item_bids, time_remaining = [], [], [], []
-
-    # Loops through all listings and adds data to item_titles, item_prices, and item_dates
+    # Loops through all listings and adds DB properties to lists
+    item_titles, item_prices, item_bids, time_remaining, item_urls = [], [], [], [], []
     for listing in listings:
         _item = " " # Removes "New Listing" prefix
 
@@ -77,20 +77,26 @@ def run_search (search_term: str, min_price: str, max_price: str, stop_words=sto
         if bids is not None:
             item_bids.append(bids.text)
 
-        time_remaining = listing.find('li', attrs={'class':"timeleft"}) or None
-        if time_remaining is not None:
-            time_remaining.append(time_remaining.text)
-            
+        for elem in listing.find_all('span', attrs={'class':"HOURS"}):
+            for items in elem:
+                try:
+                    time_remaining.append(items.partition('\n')[0])
+                except TypeError:
+                    time_remaining.append("")
 
-    print(item_prices)
-    print(item_titles)
-    print(item_bids)
+        for item in listing.find_all('a', attrs={'class':"vip"}):
+            item_urls.append(item["href"])
+
+    # print(item_prices)
+    # print(item_titles)
+    # print(item_bids)
     # print(time_remaining)
+    # print(item_urls)
 
     delete_collection(search_term)
-    for title, price, bids in zip(item_titles, item_prices, item_bids):
-        add_item(title, price, bids, collection_name=search_term)
+    for title, price, bids, urls, remaining in zip(item_titles, item_prices, item_bids, item_urls, time_remaining):
+        add_item(title, price, bids, urls, remaining, collection_name=search_term)
 
     b.quit()
 
-# run_search("Breguet", "1200", "17650")
+# run_search("breguet", "4000", "17650")

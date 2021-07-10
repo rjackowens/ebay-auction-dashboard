@@ -1,2 +1,5 @@
 .vscode
 src\__pycache__
+src/api/__pycache__/
+chromedriver
+output.txt
