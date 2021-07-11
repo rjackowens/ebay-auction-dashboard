@@ -8,3 +8,5 @@ pymongo
 bs4
 lxml
 pandas
+flower
+click===7.0
