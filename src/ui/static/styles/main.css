@@ -62,3 +62,7 @@ tr:nth-child(even) {
 	height: 15px
 }
 
+.dashboard-title {
+	text-align: center
+}
+

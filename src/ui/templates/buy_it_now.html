@@ -11,7 +11,7 @@
             $(function() {
               $('a#test').on('click', function(e) {
                 e.preventDefault()
-                $.getJSON('/db_refresh',
+                $.getJSON('/bit-db-refresh',
                     function(data) {
                   //do nothing
                 });
@@ -23,8 +23,12 @@
     <div class="button">
         <form class="button">
             <a href=# id=test><button class='btn btn-default'>Refresh DB</button></a>
-            <div>Last refreshed: 8:42</div>
+            <!-- <div>Last refreshed: 8:42</div> -->
         </form>
+    </div>
+
+    <div>
+        <h2 class="dashboard-title">Watch Dashboard: Buy it Now</h2>
     </div>
 
     <div class="section">

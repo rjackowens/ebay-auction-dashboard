@@ -1,0 +1,74 @@
+{% from 'macros.html' import table_macro %}
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+            $(function() {
+              $('a#test').on('click', function(e) {
+                e.preventDefault()
+                $.getJSON('/auction-db-refresh',
+                    function(data) {
+                  //do nothing
+                });
+                return false;
+              });
+            });
+    </script>
+
+    <div class="button">
+        <form class="button">
+            <a href=# id=test><button class='btn btn-default'>Refresh DB</button></a>
+            <!-- <div>Last refreshed: 8:42</div> -->
+        </form>
+    </div>
+
+    <div>
+        <h2 class="dashboard-title">Watch Dashboard: Auctions</h2>
+    </div>
+
+    <div class="section">
+        <ul class="grid">
+            {{ table_macro("Zenith", zenith) }}
+            {{ table_macro("Sinn", sinn) }}
+            {{ table_macro("Jaeger LeCoultre", jaeger_lecoultre) }}
+            {{ table_macro("Breguet", breguet) }}
+            {{ table_macro("Girard Perregaux", girard_perregaux) }}
+            {{ table_macro("Chopard", chopard) }}
+            {{ table_macro("Universal Geneve", universal_geneve) }}
+            {{ table_macro("IWC", iwc) }}
+            {{ table_macro("Vacheron Constantin", vacheron_constantin) }}
+            {{ table_macro("Omega", omega) }}
+            {{ table_macro("Nomos", nomos) }}
+            {{ table_macro("Bell & Ross", bell_and_ross) }}
+            {{ table_macro("Breitling", breitling) }}
+            {{ table_macro("Cartier", cartier) }}
+            {{ table_macro("Tudor", tudor) }}
+            {{ table_macro("Grand Seiko", grand_seiko) }}
+            {{ table_macro("Longines", longines) }}
+            {{ table_macro("Parmigiani", parmigiani) }}
+            {{ table_macro("Piaget", piaget) }}
+            {{ table_macro("Porsche Design", porsche_design) }}
+            {{ table_macro("Glashutte Original", glashutte_original) }}
+            {{ table_macro("Alain Silberstein", alain_silberstein) }}
+            {{ table_macro("Alpina", alpina) }}
+            {{ table_macro("Bremont", bremont) }}
+            {{ table_macro("Carlo Ferrara", carlo_ferrara) }}
+            {{ table_macro("Concord", concord) }}
+            {{ table_macro("Dubey Schaldenbrand", dubey_schaldenbrand) }}
+            {{ table_macro("Hamilton", hamilton) }}
+            {{ table_macro("Ikepod", ikepod) }}
+            {{ table_macro("Jaquet Droz", jaquet_droz) }}
+            {{ table_macro("Jean D'Eve", jean_d_eve) }}
+            {{ table_macro("Rado", rado) }}
+            {{ table_macro("Sevenfriday", sevenfriday) }}
+            {{ table_macro("Ulysse Nardin", ulysse_nardin) }}
+            {{ table_macro("Vulcain", vulcain) }}
+            {{ table_macro("Zodiac", zodiac) }}
+        </ul>
+    </div>
+</body>
