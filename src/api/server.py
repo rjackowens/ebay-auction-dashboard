@@ -29,7 +29,7 @@ def selenium_bit_search(title: str, min_price: str, max_price: str) -> str:
 @server.route("/auction-refresh", methods=["GET"])
 def add_auction_searches_to_queue():
     """Adds all auction search tasks to Celery queue"""
-    df = pd.read_csv("watch_list_short.csv", index_col=0)
+    df = pd.read_csv("search_templates/watch_list_short.csv", index_col=0)
 
     for index, row in df.iterrows():
         task = selenium_auction_search.apply_async(args=[index, row['MIN PRICE'], row['MAX PRICE']])
@@ -40,7 +40,7 @@ def add_auction_searches_to_queue():
 @server.route("/bit-refresh", methods=["GET"])
 def add_bit_searches_to_queue():
     """Adds all buy it now search tasks to Celery queue"""
-    df = pd.read_csv("watch_test.csv", index_col=0)
+    df = pd.read_csv("search_templates/watch_test.csv", index_col=0)
 
     for index, row in df.iterrows():
         task = selenium_bit_search.apply_async(args=[index, row['MIN PRICE'], row['MAX PRICE']])
