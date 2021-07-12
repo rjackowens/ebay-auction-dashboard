@@ -1,4 +1,4 @@
-{% macro table_macro(title, build) %}
+{% macro table_macro_auction(title, build) %}
     <li>
         <table class="box img-1 content-table" style="height:225; width:225; overflow-y:scroll; display: block;">
             <p style="text-align:center; margin-top: 5;"> <b>{{ title }}</b></p>
@@ -7,6 +7,21 @@
             <tr>
                 <td class="c1"><a href="{{ item.url }}">{{item.brand}} <a/></td>
                 <td class="c2">{{item.price}} <br>{{item.bids}} <br>{{item.time_left}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </li>
+{% endmacro %}
+
+{% macro table_macro_bit(title, build) %}
+    <li>
+        <table class="box img-1 content-table" style="height:225; width:225; overflow-y:scroll; display: block;">
+            <p style="text-align:center; margin-top: 5;"> <b>{{ title }}</b></p>
+
+            {% for item in build %}
+            <tr>
+                <td class="c1"><a href="{{ item.url }}">{{item.brand}} <a/></td>
+                <td class="c2">{{item.price}} <br>{{item.time_left}}</td>
             </tr>
             {% endfor %}
         </table>

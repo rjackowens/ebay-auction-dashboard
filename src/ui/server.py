@@ -104,7 +104,7 @@ def auction_db_refresh():
 
 
 @server.route('/bit-db-refresh', methods=["GET"])
-def auction_db_refresh():
+def bit_db_refresh():
     """Trigger buy it now update of DB by re-running all Celery tasks """
     print("refreshing auction searches...", file=sys.stdout)
     # return redirect('http://localhost:9000/refresh', code=307) # preserves GET method instead of OPTIONS

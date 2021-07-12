@@ -2,7 +2,8 @@ import os, sys
 import pandas as pd
 from flask import Flask
 from celery import Celery
-from selenium_scraper import run_auction_search
+from selenium_scraper import Scraper
+
 
 server, port= Flask(__name__), 9000
 
@@ -15,14 +16,14 @@ celery.conf.update(server.config)
 
 @celery.task() # @celery.task(rate_limit='20/m') 
 def selenium_auction_search(title: str, min_price: str, max_price: str) -> str:
-    """Runs Selenium search for item"""
-    run_auction_search(title, min_price, max_price)
+    """Runs Selenium auction search for item"""
+    Scraper().run_auction_search(title, min_price, max_price)
 
 
 @celery.task() # @celery.task(rate_limit='20/m') 
 def selenium_bit_search(title: str, min_price: str, max_price: str) -> str:
-    """Runs Selenium search for item"""
-    run_auction_search(title, min_price, max_price)
+    """Runs Selenium buy it now search for item"""
+    Scraper().run_bit_search(title, min_price, max_price)
 
 
 @server.route("/auction-refresh", methods=["GET"])
@@ -39,7 +40,7 @@ def add_auction_searches_to_queue():
 @server.route("/bit-refresh", methods=["GET"])
 def add_bit_searches_to_queue():
     """Adds all buy it now search tasks to Celery queue"""
-    df = pd.read_csv("watch_list_short.csv", index_col=0)
+    df = pd.read_csv("test.csv", index_col=0)
 
     for index, row in df.iterrows():
         task = selenium_bit_search.apply_async(args=[index, row['MIN PRICE'], row['MAX PRICE']])
