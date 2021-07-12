@@ -48,13 +48,13 @@ services:
     ports:
       - "9000:9000"
 
-  celery_worker: # runs Selenium tests; this can be scaled manually via docker-compose --scale celery_worker=x
+  celery_worker: # runs Selenium scraping tasks; this can be scaled manually via docker-compose --scale celery_worker=x
     build:
       context: ./src/api
     restart: unless-stopped
     entrypoint: celery -A server worker --pool=prefork --loglevel=INFO
 
-  flower:
+  flower: # dashboard to view Celery workers
     build:
       context: ./src/api
     container_name: flower-ui

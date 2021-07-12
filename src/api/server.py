@@ -40,7 +40,7 @@ def add_auction_searches_to_queue():
 @server.route("/bit-refresh", methods=["GET"])
 def add_bit_searches_to_queue():
     """Adds all buy it now search tasks to Celery queue"""
-    df = pd.read_csv("test.csv", index_col=0)
+    df = pd.read_csv("watch_test.csv", index_col=0)
 
     for index, row in df.iterrows():
         task = selenium_bit_search.apply_async(args=[index, row['MIN PRICE'], row['MAX PRICE']])
